@@ -1,0 +1,40 @@
+# mutation{
+#   login(email: "itoy@example.org", password: "password")
+# }
+
+# query{
+#   me{
+#     email
+#   }
+# }
+
+# query{
+#   category(id: 1){
+#     id
+#     name
+#   }
+#   loggedUser{
+#     email
+#   }
+# }
+
+# mutation{
+#   logout
+# }
+
+query{
+  user(id:3){
+    email
+  }
+  categories(first: 20, page: 0){
+    data{
+        id
+    }
+  }
+}
+
+# mutation{
+#   deleteCategory(id:2){
+#     id
+#   }
+# }

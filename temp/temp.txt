@@ -1,0 +1,74 @@
+# query{
+#   users(first: 20, page: 0){
+#     data{
+#       email
+#       id
+#     }
+#   }
+# }
+
+# query{
+#   posts{
+#     slug
+#     user{
+#       name
+#     }
+#   }
+# }
+
+# query{
+#   user(id: 2){
+#     name
+#     posts{
+#       id
+#       title
+#     }
+#   }
+# }
+
+# query{
+#   customPosts{
+#     id
+#     title
+#   }
+# }
+
+query{
+  categories{
+    id
+    name
+   	user{
+      id
+      email
+      name
+    }
+  }
+}
+
+# query{
+#   findPostByTitle(title: "Ofelia Hermann"){
+#     id
+#     title
+#   }
+# }
+
+# query{
+#   postsSearchTitle(title: "Ofelia Herman"){
+#     id
+#     title
+#   }
+# }
+
+# mutation{
+#   deletePost(id: 1){
+#     id
+#     title
+#   }
+# }
+
+# mutation{
+#   createPost(title: "1234", slug: "slug", text: "text", user){
+#     id
+#     title
+#   }
+# }

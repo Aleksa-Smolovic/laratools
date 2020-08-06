@@ -1,0 +1,36 @@
+# mutation{
+#   deleteCategory(id: 51){
+#     id
+#     user{
+#       id 
+#       name
+#     }
+#     name
+#   }
+# }
+
+# mutation{
+#   restoreCategory(id: 51){
+#     id
+#   }
+# }
+
+# mutation{
+#   upsertCategory(
+#     input:{
+#       id: 52
+#       name: "NewadCat2",
+#       user: {
+#         connect: 5
+#       }
+#     }
+#   ){
+#     id
+#   }
+# }
+
+# query{
+#   category(id: 52){
+#     name
+#   }
+# }

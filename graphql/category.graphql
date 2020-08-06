@@ -1,0 +1,47 @@
+extend type Query {
+  categories: [PostCategory!]! @paginate(defaultCount: 10) 
+  category(id: ID! @eq): PostCategory @find @guard
+}
+
+extend type Mutation{
+  createCategory(input: CreateCategoryInput! @spread): PostCategory @create
+  updateCategory(input: UpdateCategoryInput! @spread): PostCategory @update
+
+  deleteCategory(id: ID!): PostCategory @middleware(checks: ["permissions:user"]) @delete 
+  restoreCategory(id: ID!): PostCategory @restore
+
+  upsertCategory(input: UpsertCategoryInput! @spread): PostCategory @upsert
+}
+
+type PostCategory{
+    id: ID!
+    name: String!
+    user: User! @belongsTo
+    createdAt: DateTime! @rename(attribute: "created_at")
+}
+
+input CreateCategoryInput {
+    name: String! @rules(apply: ["required", "min:4"])
+    user: CreateUserBelongsTo!
+}
+
+input UpdateCategoryInput {
+    id: ID! 
+    name: String! @rules(apply: ["required", "min:4"])
+    user: CreateUserBelongsTo!
+}
+
+input UpsertCategoryInput {
+    id: ID
+    name: String! @rules(apply: ["required", "min:4"])
+    user: CreateUserBelongsTo!
+}
+
+input UserInput{
+  id: ID!
+}
+
+input CreateUserBelongsTo {
+  connect: ID
+}
+

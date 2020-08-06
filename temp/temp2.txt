@@ -1,0 +1,50 @@
+# query{
+#   categories(first:5, page:0){
+#     data{
+#       id
+#       name
+#     }
+#   }
+#   category(id: 2){
+#     id
+#     name
+#     createdAt
+#     user{
+#       email
+#     }
+#   }
+# }
+  
+  mutation{
+    # createCategory(input:{
+    #   name: "Categ",
+    #   user: {
+    #     connect: 5
+    #   }
+    # }){
+    #   id
+    #   user{
+    #     id
+    #     name
+    #   }
+    # }
+    updateCategory(
+      input: {
+        id: 51,
+        name: "Categ2",
+        user: {
+          connect: 2
+        }
+      }
+    ){
+      id
+      user{
+        id
+        name
+      }
+      name
+    }
+  }
+
+
+  

@@ -1,0 +1,43 @@
+
+extend type Mutation{
+    login(
+        email: String! @rules(apply: ["required", "email"]),
+        password: String! @rules(apply: ["required"])
+        ): String @field(resolver: "UserMutator@login")
+    logout: String @field(resolver: "UserMutator@logout") @guard
+
+    createUser(input: CreateUserInput! @spread): User! @field(resolver: "UserMutator@createUser")
+}
+
+extend type Query{
+    me: User @field(resolver: "UserQuery@me") 
+    loggedUser: User @auth
+    
+    user(id: ID! @eq): User @find @can(ability: "hasRole", args: ["admin"])    
+}
+
+input CreateUserInput {
+    name: String! @rules(apply: ["required", "min:4"])
+    email: String! @rules(apply: ["required", "email", "unique:users,email"])
+    role: CreateRoleBelongsTo!
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    created_at: DateTime!
+    updated_at: DateTime!
+    role: Role! @belongsTo
+    posts: [Post] @hasMany
+}
+
+type Role{
+    id: ID!
+    name: String!
+    users: [User] @hasMany
+}
+
+input CreateRoleBelongsTo {
+  connect: ID
+}
