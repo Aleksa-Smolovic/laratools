@@ -16,3 +16,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/token', 'FirebaseController@sendToToken');
+Route::get('/topic', 'FirebaseController@sendToTopic');
+Route::get('/subscribe', 'FirebaseController@subscribeToTopic');
+Route::get('/unsubscribe', 'FirebaseController@unsubscribeFromTopic');
