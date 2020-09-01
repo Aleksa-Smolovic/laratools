@@ -1,79 +1,50 @@
-<p align="center"><img src="https://res.cloudinary.com/dtfbvvkyp/image/upload/v1566331377/laravel-logolockup-cmyk-red.svg" width="400"></p>
+## Webscokets
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+Based on package: https://beyondco.de/docs/laravel-websockets/getting-started/installation.
+Pusher is 3rd party service which runs on seperate server. 
+This package replicates Pusher APIs so it can be used with all features relying on Pusher meaning it can used pusher package.
+In the .env file, Pusher fields are user generated and are not real.
+Client library used: Echo.
+For pusher package run: ``composer require pusher/pusher-php-server "~4.0"``
+For client app run: ``npm install --save laravel-echo pusher-js``
 
-## About Laravel
+Package is built on top of Ratchet (low level php package: http://socketo.me/), which runs seperate server. Single server can be used for multiple apps (supports multi-tenancy).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Flow
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Running ``php artisan webscoket:serve`` start the server which mimics Pusher's server thus enabling usage of the functions and features relying on it (Broadcasting). Server can be configured and it support multiple apps connecting to it. 
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+To receive data client must be subscribed to appropriate channels. In this example, Echo is used to achieve this goal. 
 
-## Learning Laravel
+Data can be sent to all users (non logged) using ``Channel`` or authenticated users using ``PrivateChannel`` and ``PresenceChannel``. 
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Routes are protected in the ``routes/channels.php`` file. Custom logic can be provided for route protection as well as other means of auth (Bearer token, JWT, ...).
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+To send data to specific user, said user must be subscribed to unique channel. IE. channel name can contain user specific information like id and in route protection it can be checked wether authenticated user is subscribed to it's own channel thus preventing intrusion. Better use case would be to generate unique tokens on login and assign them to users.
 
-## Laravel Sponsors
+## Events
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+Events are classes in which broadcast logic is defined for some app event: type of channel (channel, private or presence), channel (topic), input data, output data... 
+Channels are used for events which are available to everyone.
+PrivateChannels are used for events which are broadcast only to (authenticated) users or (custom) user groups.
+PresenceChannels also require authorization.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
-- [We Are The Robots Inc.](https://watr.mx/)
-- [Understand.io](https://www.understand.io/)
-- [Abdel Elrafa](https://abdelelrafa.com)
-- [Hyper Host](https://hyper.host)
-- [Appoly](https://www.appoly.co.uk)
-- [OP.GG](https://op.gg)
-- [云软科技](http://www.yunruan.ltd/)
+Events can be customized by adding custom event name (used by echo, default is class name) or by defining output payload. Check Laravel Broadcasting documentation.
 
-## Contributing
+## Notes
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- In this example standard Laravel auth logic is being used. Channel routes can be protected by other types of auth ie. Bearer token, jwt, etc.. For route protection and echo configuration check: https://stackoverflow.com/questions/41728930/laravel-broadcasting-auth-always-fails-with-403-error#answer-50405768
+- TLS is acting weird (tls = false => http / ws, tls = true => https => wss)
+- Sending to others except current user: 
 
-## Code of Conduct
+    ``broadcast(new NewMessage($message))->toOthers();``
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- Scenario: Creating comment for the post. It is faster to perform visual insert vith js than to wait websocket to insert it.
+- IMPORTANT! Configure ``config/websockets.php`` before prod, ie. websocket stats insert level, period, tls, etc...
 
-## Security Vulnerabilities
+## Links
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- BasePackage: https://beyondco.de/docs/laravel-websockets/getting-started/introduction
+- Laravel Broadcasting: https://laravel.com/docs/7.x/broadcasting
+- Ratchet (http://socketo.me/)
+- Api token auth configuration: https://stackoverflow.com/questions/41728930/laravel-broadcasting-auth-always-fails-with-403-error#answer-50405768
